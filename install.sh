@@ -13,8 +13,8 @@ esac
 
 printf "Downloading flare_${VERSION}_${ARCH}...\n"
 
-sudo curl -fsSL "https://github.com/coalaura/flare/releases/download/${VERSION}/flare_${VERSION}_${ARCH}" -o /usr/local/bin/flare
-sudo chmod +x /usr/local/bin/flare
+curl -fsSL "https://github.com/coalaura/flare/releases/download/${VERSION}/flare_${VERSION}_${ARCH}" -o /usr/local/bin/flare
+chmod +x /usr/local/bin/flare
 
 printf "Testing installation...\n"
 
@@ -22,6 +22,9 @@ flare
 
 printf "Setting up cron job...\n"
 
-printf "0 */6 * * * /usr/local/bin/flare\n" > /etc/cron.d/flare
+printf "0 */6 * * * root /usr/local/bin/flare\n" > /etc/cron.d/flare
+
+chown root:root /etc/cron.d/flare
+chmod 0644 /etc/cron.d/flare
 
 printf "\033[0;32mInstalled successfully!\033[0m\n"
