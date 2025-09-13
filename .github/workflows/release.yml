@@ -1,0 +1,67 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        goarch: [amd64, arm64]
+      fail-fast: false
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: 'go.mod'
+
+    - name: Build ${{ matrix.goarch }}
+      shell: bash
+      run: |
+        mkdir -p build
+
+        OUT="build/flare_${{ github.ref_name }}_${{ matrix.goarch }}"
+
+        GOOS=linux \
+        GOARCH=${{ matrix.goarch }} \
+        go build \
+          -trimpath \
+          -buildvcs=false \
+          -o "$OUT" .
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: flare_${{ github.ref_name }}_${{ matrix.goarch }}
+        path: build/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Download all build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./build
+
+    - name: Create GitHub release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./build/**
+        name: "Release ${{ github.ref_name }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
