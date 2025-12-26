@@ -5,7 +5,7 @@ Ultra-fast Cloudflare IP updater for nginx `real_ip` configuration. Keeps your C
 ## Install
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/coalaura/flare/master/install.sh | sudo bash
+curl -sSL https://src.w2k.sh/flare/install.sh | sudo bash
 ```
 
 ## Usage
